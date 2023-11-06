@@ -20,7 +20,7 @@ def rec(output_file, duration):
                         frames_per_buffer=1024)
 
     #print("Recording..." + output_file)
-    print("Started Recording " + output_file, 1699270000000 - round(time.time() * 1000))
+    # print("Started Recording " + output_file, 1699270000000 - round(time.time() * 1000))
     frames = []
 
     # Record audio
@@ -29,7 +29,7 @@ def rec(output_file, duration):
         frames.append(data)
 
     #print("Finished recording." + output_file)
-    print("Ended Recording" + output_file, 1699270000000 - round(time.time() * 1000))
+    # print("Ended Recording" + output_file, 1699270000000 - round(time.time() * 1000))
 
     # Stop and close the audio stream
     stream.stop_stream()
