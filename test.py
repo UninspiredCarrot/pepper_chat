@@ -215,6 +215,6 @@ if __name__ == "__main__":
 
 			cleanup(path)
 
-		except KeyboardInterrupt:
-			cleanup(path)
+	except KeyboardInterrupt:
+		cleanup(path)
 
