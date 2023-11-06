@@ -4,17 +4,9 @@ Brief project description.
 
 ## Files
 
-### `main.py`
+### `test.py`
 
 Description of what `main.py` does in your project.
-
-### `combine_and_mono.py`
-
-Description of what `combine_and_mono.py` does in your project.
-
-### `check.py`
-
-Description of what `check.py` does in your project.
 
 ### `record.py`
 
