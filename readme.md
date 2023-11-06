@@ -6,7 +6,7 @@ Brief project description.
 
 ### `test.py`
 
-Description of what `main.py` does in your project.
+Description of what `test.py` does in your project.
 
 ### `record.py`
 
