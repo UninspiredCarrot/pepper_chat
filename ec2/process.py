@@ -11,15 +11,13 @@ def hello_world():
 def ask_question():
     data = request.json
     user_input = data.get('question')
-    api_key = data.get('api key')
-    return jsonify({"answer": request_aws.req(user_input, api_key)})
+    return jsonify({"answer": request_aws.req(user_input)})
 
 @app.route('/listen', methods=['POST'])
 def upload_wav():
     file = request.files["audio_file"]
-    key = request.form['text']
     file.save("wav_files/audio.wav")
-    transcript = request_aws.scribe("wav_files/audio.wav", key)
+    transcript = request_aws.scribe("wav_files/audio.wav")
     return jsonify({"transcript": transcript})
 
 if __name__ == '__main__':

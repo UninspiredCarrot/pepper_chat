@@ -27,7 +27,7 @@ def speak(text):
 	  
 	# Saving the converted audio in a mp3 file named 
 	# welcome  
-	myobj.save("speech.mp3") 
+	myobj.save("/audio/speech.mp3") 
 	  
 	# Playing the converted file 
-	playsound.playsound("speech.mp3", block=blocking)
+	playsound.playsound("/audio/speech.mp3", block=blocking)

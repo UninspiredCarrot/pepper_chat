@@ -19,7 +19,7 @@ else:
 	from queue import Queue
 
 api_url = "http://13.42.27.138:8080"
-api_key = "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"
+record_path = "/Users/pratyushsingh/Desktop/VIP4SD/repo/audio/"
 
 def combine(audio_file1, audio_file2, output_file):
 
@@ -41,8 +41,7 @@ def ask(user_input):
 
     # Create a dictionary with the question
     data = {
-        "question": user_input,
-        "api key": api_key
+        "question": user_input
     }
 
 
@@ -60,8 +59,7 @@ def ask(user_input):
 
 def scribe(path):
     files = {
-        'audio_file': (path, open(path, 'rb'), 'audio/wav'),
-        'text': (None, api_key)
+        'audio_file': (path, open(path, 'rb'), 'audio/wav')
         }
 
     response = requests.post(api_url+"/listen", files=files)
@@ -121,7 +119,7 @@ def checker(file, q, word, output_file=None):
 			os.rename(output_file, output_file)
 
 		else:
-			combine(output_file,'3.wav',output_file)
+			combine(output_file, record_path + '3.wav', output_file)
 
 def threader(target1, args1, target2, args2):
 
@@ -134,26 +132,26 @@ def threader(target1, args1, target2, args2):
 	thread1.join()
 	thread2.join()
 
-	mono('3.wav', '3.wav')
+	mono(record_path + '3.wav', record_path + '3.wav')
 
 def record_heys(output_file):
 
-	record.rec("1.wav", 4)
-	record.rec("2.wav", 4)
-	combine('1.wav','2.wav', output_file)
+	record.rec(record_path + "1.wav", 4)
+	record.rec(record_path + "2.wav", 4)
+	combine(record_path + '1.wav',record_path + '2.wav', output_file)
 
 	awake_queue = Queue()
 	silence_queue = Queue()
 
 	while True:
 
-		threader(checker, (output_file, awake_queue,"awake"), record.rec, ('3.wav',4,))
+		threader(checker, (output_file, awake_queue,"awake"), record.rec, (record_path + '3.wav',4,))
 
 		if awake_queue.get():
 
 			while True:
 
-				threader(checker, ('3.wav',silence_queue,"silence",output_file), record.rec, ('3.wav',5,))
+				threader(checker, (record_path + '3.wav',silence_queue,"silence",output_file), record.rec, (record_path + '3.wav',5,))
 
 				if silence_queue.get():
 
@@ -163,18 +161,18 @@ def record_heys(output_file):
 
 		else:
 
-			os.remove("1.wav")
-			os.rename("2.wav", "1.wav")
-			os.rename("3.wav", "2.wav")
-			combine('1.wav','2.wav', output_file)
+			os.remove(record_path + "1.wav")
+			os.rename(record_path + "2.wav", record_path + "1.wav")
+			os.rename(record_path + "3.wav", record_path + "2.wav")
+			combine(record_path + '1.wav',record_path + '2.wav', output_file)
 
 def cleanup(path):
 
 	files = ["1.wav", "2.wav", "3.wav", "cf.wav", "speech.mp3", path]
 
 	for file in files:
-		if os.path.exists(file):
-			os.remove(file)
+		if os.path.exists(record_path + file):
+			os.remove(record_path + file)
 	
 	# # Stop and close the audio stream
 	# record.stream.stop_stream()
@@ -184,37 +182,39 @@ def cleanup(path):
 	print("cleanup done")
 
 if __name__ == "__main__":
+	try:
+		while True:
 
-	while True:
+			path = record_path + "full.wav"
 
-		path = "full.wav"
+			record_heys(path)
 
-		record_heys(path)
+			try:
+				question = re.split(r"[, .]+", scribe(path)["text"])
+				position = 0
+				for i in range(len(question)):
+					if re.findall(r"(pep|per)", question[i], re.IGNORECASE):
+						position = i+1
+						break
 
-		try:
-			question = re.split(r"[, .]+", scribe(path)["text"])
-			position = 0
-			for i in range(len(question)):
-				if re.findall(r"(pep|per)", question[i], re.IGNORECASE):
-					position = i+1
-					break
+				question = "User: "+ " ".join(question[position:])
+				print(question)
+				answer = ask(question)
+				print(answer)
+				tts.speak(answer)
 
-			question = "User: "+ " ".join(question[position:])
-			print(question)
-			answer = ask(question)
-			print(answer)
-			tts.speak(answer)
+			except requests.exceptions.ConnectionError:
+				r = sr.Recognizer()
+				r.energy_threshold = 1500
+				r.language = 'en-US'
+				print("Could not connect to API")
+				with sr.WavFile(path) as source:
+					audio = r.record(source)
+				words = r.recognize(audio)
+				print("Google thinks you said: " + words)
 
-		except requests.exceptions.ConnectionError:
-			r = sr.Recognizer()
-			r.energy_threshold = 1500
-			r.language = 'en-US'
-			print("Could not connect to API")
-			with sr.WavFile(path) as source:
-				audio = r.record(source)
-			words = r.recognize(audio)
-			print("Google thinks you said: " + words)
+			cleanup(path)
 
-		cleanup(path)
-
+		except KeyboardInterrupt:
+			cleanup(path)
 
