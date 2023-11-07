@@ -177,8 +177,6 @@ def cleanup(path):
 	if os.path.exists(path):
 		os.remove(path)
 
-	if os.path.exists(record_path[:41] + "ec2/wav_files/audio.wav"):
-		os.remove(record_path[:41] + "ec2/wav_files/audio.wav")
 	
 	# # Stop and close the audio stream
 	# record.stream.stop_stream()
