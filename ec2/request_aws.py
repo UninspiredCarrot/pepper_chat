@@ -18,7 +18,7 @@ def chat_with_bot(user_input):
         model="gpt-3.5-turbo",
         messages=conversation,
         temperature=0.4,
-        max_tokens=300
+        max_tokens=150
     )
 
     # Extract and return the bot's response

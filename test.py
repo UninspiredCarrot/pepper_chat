@@ -168,11 +168,17 @@ def record_heys(output_file):
 
 def cleanup(path):
 
-	files = ["1.wav", "2.wav", "3.wav", "cf.wav", "speech.mp3", path]
+	files = ["1.wav", "2.wav", "3.wav", "cf.wav", "speech.mp3"]
 
 	for file in files:
 		if os.path.exists(record_path + file):
 			os.remove(record_path + file)
+
+	if os.path.exists(path):
+		os.remove(path)
+
+	if os.path.exists(record_path[:41] + "ec2/wav_files/audio.wav"):
+		os.remove(path)
 	
 	# # Stop and close the audio stream
 	# record.stream.stop_stream()
