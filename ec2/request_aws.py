@@ -18,7 +18,7 @@ def chat_with_bot(user_input):
         model="gpt-3.5-turbo",
         messages=conversation,
         temperature=0.4,
-        max_tokens=150
+        max_tokens=50
     )
 
     # Extract and return the bot's response
@@ -32,5 +32,5 @@ def req(user_input):
 def scribe(path):
     openai.api_key = os.environ['API_KEY']
     audio_file = open(path, "rb")
-    transcript = openai.Audio.transcribe("whisper-1", audio_file, prompt="ingredients,help, for, chicken, bread, milk", language="en", temperature=0.2)
+    transcript = openai.Audio.transcribe("whisper-1", audio_file, prompt="ingredients,help, for, chicken, bread, milk,Pepper", language="en", temperature=0.2)
     return transcript
