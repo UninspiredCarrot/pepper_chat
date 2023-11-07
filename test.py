@@ -156,7 +156,7 @@ def record_heys(output_file):
 
 			while True:
 
-				threader(checker, (record_path + '3.wav',silence_queue,"silence",output_file), record.rec, (record_path + '3.wav',8,))
+				threader(checker, (record_path + '3.wav',silence_queue,"silence",output_file), record.rec, (record_path + '3.wav',6,))
 
 				if silence_queue.get():
 
