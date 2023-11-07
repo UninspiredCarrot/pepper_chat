@@ -23,7 +23,7 @@ def chat_with_bot(user_input):
 
     # Extract and return the bot's response
     bot_response = response['choices'][0]['message']['content']
-    print(bot_response)
+    print(bot_response[5:])
     return bot_response
 def req(user_input):
     print("User: " + user_input)
