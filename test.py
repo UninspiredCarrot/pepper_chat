@@ -19,7 +19,7 @@ else:
 	from queue import Queue
 
 api_url = "http://13.42.27.138:8080"
-record_path = "/home/nao/repo/audio/"
+record_path = os.getcwd() + "/audio/"
 
 def combine(audio_file1, audio_file2, output_file):
 
