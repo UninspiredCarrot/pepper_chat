@@ -8,7 +8,7 @@ import json
 from pydub import AudioSegment
 import time
 import sys
-import tts
+import talk
 
 
 if sys.version_info[0] < 3:
@@ -19,7 +19,7 @@ else:
 	from queue import Queue
 
 api_url = "http://13.42.27.138:8080"
-record_path = "/Users/pratyushsingh/Desktop/VIP4SD/repo/audio/"
+record_path = "/home/nao/repo/audio/"
 
 def combine(audio_file1, audio_file2, output_file):
 
@@ -65,7 +65,7 @@ def scribe(path):
     response = requests.post(api_url+"/listen", files=files)
     return response.json()["transcript"]
 
-def check(file, hyperaware=False, curious=False):
+def check(file, hyperaware=True, curious=True):
 	r = sr.Recognizer()
 	r.energy_threshold = 1500
 	r.language = 'en-US'
@@ -77,35 +77,40 @@ def check(file, hyperaware=False, curious=False):
 	try:
 		words = r.recognize(audio)
 
-		print("I heard: ")
-		print(words)
+		print("I think I heard: ")
+		
 		
 		if hyperaware:
-			whisper_words = set(re.split(r"[, .]+", scribe(file)["text"]))
-			##print(whisper_words)
+			print("google heard: " + words, round(time.time() * 1000))
+			words = set(re.split(r"[, .]+", words))
+			whisper_words = scribe(file)["text"]
+			print("whisper heard: " + whisper_words, round(time.time() * 1000))
+			whisper_words = set(re.split(r"[, .]+", whisper_words))
+			whisper_words.update(words)
 			for word in whisper_words:
 				if re.findall(r"(pep|per)", word, re.IGNORECASE):
-					print("awake Check ended at:", time.ctime(time.time()))
+					print("awake Check ended at:", round(time.time() * 1000))
 					return "awake"
-			print("not awake Check ended at:", time.ctime(time.time()))
+			print("not awake Check ended at:", round(time.time() * 1000))
 			return "heard asleep"
 		else:
+			print(words)
 			words = set(re.split(r"[, .]+", words))
 			##print(words)
 			if curious:
 				whisper_words = set(re.split(r"[, .]+", scribe(file)["text"]))
-				##print(whisper_words)
+				print(whisper_words)
 
 			for word in words:
 				if re.findall(r"(pep|per)", word, re.IGNORECASE):
-					print("Awake at: ", time.ctime(time.time()))
+					print("Awake at: ", round(time.time() * 1000))
 					return "awake"
-			print("Heard at: ", time.ctime(time.time()))
+			print("Heard at: ", round(time.time() * 1000))
 			return "heard"
 
 
 	except LookupError:
-		print("Silent at:", time.ctime(time.time()))
+		print("Silent at:", round(time.time() * 1000))
 		return "silence"
 
 def checker(file, q, word, output_file=None):
@@ -136,8 +141,8 @@ def threader(target1, args1, target2, args2):
 
 def record_heys(output_file):
 
-	record.rec(record_path + "1.wav", 4)
-	record.rec(record_path + "2.wav", 4)
+	record.rec(record_path + "1.wav", 6)
+	record.rec(record_path + "2.wav", 6)
 	combine(record_path + '1.wav',record_path + '2.wav', output_file)
 
 	awake_queue = Queue()
@@ -145,13 +150,13 @@ def record_heys(output_file):
 
 	while True:
 
-		threader(checker, (output_file, awake_queue,"awake"), record.rec, (record_path + '3.wav',4,))
+		threader(checker, (output_file, awake_queue,"awake"), record.rec, (record_path + '3.wav',6,))
 
 		if awake_queue.get():
 
 			while True:
 
-				threader(checker, (record_path + '3.wav',silence_queue,"silence",output_file), record.rec, (record_path + '3.wav',5,))
+				threader(checker, (record_path + '3.wav',silence_queue,"silence",output_file), record.rec, (record_path + '3.wav',8,))
 
 				if silence_queue.get():
 
@@ -202,10 +207,10 @@ if __name__ == "__main__":
 						break
 
 				question = "User: "+ " ".join(question[position:])
-				print(question)
+				print(question, round(time.time() * 1000))
 				answer = ask(question)
-				print(answer)
-				tts.speak(answer)
+				print(answer, round(time.time() * 1000))
+				talk.speak(answer[6:].encode('ascii', 'ignore'))
 
 			except requests.exceptions.ConnectionError:
 				r = sr.Recognizer()
